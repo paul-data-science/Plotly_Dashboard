@@ -40,7 +40,7 @@ function buildCharts(sample) {
     };
     var pieData = [traceB];
     var pieLayout = {
-      autosize: true,
+      //autosize: true,
       showlegend: true,
       annotations: false,
       //hovermode: "closest"
