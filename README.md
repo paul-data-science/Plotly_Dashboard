@@ -1,6 +1,6 @@
 # Belly Button Biodiversity
 ## Heroku app +> https://belly-button-bacteria-study.herokuapp.com/
-![Bacteria by filterforge.com](Images/bacteria_by_filterforgedotcom.jpg)
+![Screen capture of dashboard](Images/screencapture-belly-button-bacteria-study-herokuapp-2019-01-04-03_20_03.png)
 
 In this assignment, you will build an interactive dashboard to explore the [Belly Button Biodiversity DataSet](http://robdunnlab.com/projects/belly-button-biodiversity/).
 
