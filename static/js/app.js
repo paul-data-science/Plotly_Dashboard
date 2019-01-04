@@ -1,3 +1,73 @@
+
+var maxSlices = 9;
+ function buildGauge(sampleWFREQ) {
+    //d3.json(`/metadata/${sample}`).then((sampleNames) => {
+      // @TODO: Build Gauge Chart  
+  var GAUGE = document.getElementById("gauge");
+      // sampleWFREQ is between 0 and 9
+      //console.log(sampleWFREQ); //WORKING!!!
+      // Trig to calc meter point
+      var radians = Math.PI - Math.PI*(sampleWFREQ/maxSlices);
+      var x = Math.cos(radians);
+      var y = Math.sin(radians);
+      /***************************************************************************************************************
+       * <g class="shapelayer"><path data-index="0" fill-rule="evenodd" 
+       * d="M 360 238.38 L 360 231.63 L 623.11 188.82999999999998 Z"     <= DIRECTION OF NEEDLE !!!
+       * clip-path="url(#clip7b1f3fxy)" style="opacity: 1; 
+       * stroke: rgb(0, 0, 0); stroke-opacity: 1; fill: rgb(0, 0, 0); fill-opacity: 1; stroke-width: 2px;"></path></g>
+       */
+      // Path: may have to change to create a better triangle
+      var mainPath = 'M -.0 -0.03 L .0 0.03 L ',
+      pathX = String(x),
+      space = ' ',
+      pathY = String(y),
+      pathEnd = ' Z';
+      var path = mainPath.concat(pathX,space,pathY,pathEnd); //console.log(path);
+      
+  var denom = 9;
+  var numr = 90;
+  var gaugeData = [{ type: 'scatter', x: [0], y:[0],
+   marker: {size: 20, color:'000000'},
+   hoverinfo: false,
+   hoverttext: "Frequently Washed "+sampleWFREQ+" times",
+   showlegend: false
+    },
+    {type: "pie",
+    showlegend: false,
+    hole: 0.2,
+    rotation: 90,
+    values: [numr / denom, numr / denom, numr / denom, numr / denom, numr / denom, numr / denom, numr / denom, numr / denom, numr / denom, 90],
+    text: ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6", "6-7", "7-8", "8-9", ""],
+    descr1: "Frequently Wash ",
+    descr2: "Times",
+    direction: "clockwise",
+    textinfo: "text",
+    textposition: "inside",
+    marker: { colors: ["","","","","","","","","","white"]
+    },
+    labels: ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6", "6-7", "7-8", "8-9", ""],
+    hoverinfo: "label"
+  }];
+
+  var gaugeLayout = {
+  shapes:[{
+  type: 'path',
+  path: path,
+  fillcolor: '000000',
+  line: {
+    color: '000000'
+  }
+  }],
+  title: 'Belly Button Washing Frequency',
+  xaxis: {zeroline:false, showticklabels:false,
+          showgrid: false, range: [-1, 1]},
+  yaxis: {zeroline:false, showticklabels:false,
+          showgrid: false, range: [-1, 1]}
+  };
+console.log(gaugeLayout);
+  Plotly.newPlot(GAUGE, gaugeData, gaugeLayout);
+};
+
 function buildMetadata(sample) {
 
   // @TODO: Complete the following function that builds the metadata panel
@@ -6,7 +76,7 @@ function buildMetadata(sample) {
   //                       'BBTYPE': 'I', 'WFREQ': 2.0}
   // Use `d3.json` to fetch the metadata for a sample: "/metadata/<sample>"
   d3.json(`/metadata/${sample}`).then((sampleNames) => {
-      console.log("meta: ", sampleNames); // WORKING !!!!
+     // console.log("meta: ", sampleNames); // WORKING !!!!
     // Use d3 to select the panel with id of `#sample-metadata`
     var selector = d3.select("#sample-metadata");
     // Use `.html("") to clear any existing metadata
@@ -15,74 +85,12 @@ function buildMetadata(sample) {
     Object.entries(sampleNames).forEach(([key, value]) => {
       var li = selector.append("li").text(`${key}: ${value}`);
     });
-  buildGauge(sampleNames.WFREQ);
-  })
+    //console.log(sampleNames.WFREQ); // WORKING!!!
+    buildGauge(sampleNames.WFREQ);
+  });
 };
 
-function buildGauge(data) {
-  // @TODO: Build Gauge Chart  
-  var GAUGE = document.getElementById("gauge");
-  // Trig to calc meter point
-  // Enter WFREQ between 0 and 9
-  var level = data;
-  var degrees = 180 - level,
-  radius = .5;
-  var radians = degrees * Math.PI / 180;
-  var x = radius * Math.cos(radians);
-  var y = radius * Math.sin(radians);
 
-  // Path: may have to change to create a better triangle
-  var mainPath = 'M -.0 -0.025 L .0 0.025 L ',
-  pathX = String(x),
-  space = ' ',
-  pathY = String(y),
-  pathEnd = ' Z';
-  var path = mainPath.concat(pathX,space,pathY,pathEnd);
-
-  var traceC = [{ type: 'scatter',
-  x: [0], y:[0],
-  marker: {size: 28, color:'850000'},
-  showlegend: false,
-  name: 'speed',
-  text: level,
-  hoverinfo: 'text+name'},
-  { values: [50/6, 50/6, 50/6, 50/6, 50/6, 50/6, 50],
-  rotation: 90,
-  text: ['TOO FAST!', 'Pretty Fast', 'Fast', 'Average',
-        'Slow', 'Super Slow', ''],
-  textinfo: 'text',
-  textposition:'inside',
-  marker: {colors:['rgba(14, 127, 0, .5)', 'rgba(110, 154, 22, .5)',
-                      'rgba(170, 202, 42, .5)', 'rgba(202, 209, 95, .5)',
-                      'rgba(210, 206, 145, .5)', 'rgba(232, 226, 202, .5)',
-                      'rgba(255, 255, 255, 0)']},
-  labels: ['151-180', '121-150', '91-120', '61-90', '31-60', '0-30', ''],
-  hoverinfo: 'label',
-  hole: .5,
-  type: 'pie',
-  showlegend: false
-  }];
-  var gaugeData = [traceC];
-  var gaugeLayout = {
-  shapes:[{
-  type: 'path',
-  path: path,
-  fillcolor: '850000',
-  line: {
-    color: '850000'
-  }
-  }],
-  title: 'Gauge Speed 0-100',
-  //height: 1000,
-  //width: 1000,
-  xaxis: {zeroline:false, showticklabels:false,
-          showgrid: false, range: [-1, 1]},
-  yaxis: {zeroline:false, showticklabels:false,
-          showgrid: false, range: [-1, 1]}
-  };
-
-  Plotly.plot(GAUGE, gaugeData, gaugeLayout, {responsive: true});
-};
 function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
@@ -159,6 +167,7 @@ function init() {
     const firstSample = sampleNames[0];
     buildCharts(firstSample);
     buildMetadata(firstSample);
+    //buildGauge(firstSample);
   });
 };
 
@@ -166,6 +175,7 @@ function optionChanged(newSample) {
   // Fetch new data each time a new sample is selected
   buildCharts(newSample);
   buildMetadata(newSample);
+  //buildGauge(newSample);
 };
 
 // Initialize the dashboard
